@@ -91,8 +91,3 @@ Replace YOUR_IP, L_PORT, and YOUR_FILE.ps1 with your server details and script f
 
 Ensure your server is accessible from the target.
 
-⚠️ Legal Notice
-These scripts are for educational purposes and authorized testing only.
-Unauthorized use is illegal and unethical.
-
-Let me know if you want these explanations formatted or expanded differently!
