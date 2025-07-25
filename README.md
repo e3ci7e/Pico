@@ -21,8 +21,8 @@
     <li>
       <h3>Quick Start</h3>
       <p><strong>Clone the Repository:</strong></p>
-      <pre><code>git clone https://github.com/YOUR_USERNAME/hid-powershell-payloads.git
-cd hid-powershell-payloads
+      <pre><code>git clone https://github.com/e3ci7e/Pico
+cd Pico
 </code></pre>
     </li>
     <li>
