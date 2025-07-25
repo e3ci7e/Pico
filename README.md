@@ -6,7 +6,7 @@
   <meta charset="UTF-8">
 </head>
 <body>
-  <h1>HID-based PowerShell Payload Toolkit</h1>
+  <h1>HID-based PowerShell Payload PicoKit</h1>
   <h2>Automated Payload Delivery Using USB Rubber Ducky &amp; Raspberry Pi Pico</h2>
 
   <p>
